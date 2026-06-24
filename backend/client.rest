@@ -1,0 +1,40 @@
+GET http://localhost:3000/api/users/6a04a812698ddd574cb4895a
+//GET, POST, PUT, DELETE, PATCH
+###
+POST http://localhost:3000/api/users
+Content-Type: application/json
+Authorization: "Bearer dsadsa"
+
+{
+  "username": "JohnDoe",
+  "email": "john.doe2@example.com",
+  "password": "password123",
+  "first_name": "John",
+  "last_name": "Doe",
+  "date_of_birth": "1990-01-01",
+  "address": "123 Main St, Anytown, USA",
+  "contact": "123-456-7890"
+}
+###
+PUT http://localhost:3000/api/users/6a1797b2435b0f29f8ebbe5f
+Content-Type: application/json
+
+{
+  "username": "JD2",
+  "email": "john.doe2@example.com",
+  "first_name": "John 2",
+  "last_name": "Doe 2",
+  "date_of_birth": "1990-01-01",
+  "address": "123 Main St, Anytown, USA",
+  "contact": "123-456-7890"
+}
+###
+DELETE http://localhost:3000/api/users/6a1797b2435b0f29f8ebbe5f
+###
+PATCH http://localhost:3000/api/users/6a1797b2435b0f29f8ebbe5f/change-password
+Content-Type: application/json
+
+{
+  "current_password": "password123",
+  "new_password": "newpassword456"
+}
