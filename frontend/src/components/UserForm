@@ -1,0 +1,129 @@
+import { useState } from "react"; //react hooks
+
+export default function UserForm() {
+  const [formData, setFormData] = useState({});
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const baseUrl = "http://localhost:3000/api/users";
+      //validation
+      if (formData.password_confirmation !== formData.password) {
+        throw new Error("Password mismatch.");
+      }
+      const user = await fetch(baseUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const response = await user.json();
+      alert(`${response?.data.username} successfully created.`);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="username">Username: </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            required
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="email">Email: </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="password">Password: </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="password_confirmation">Confirm Password: </label>
+          <input
+            type="password"
+            id="password_confirmation"
+            name="password_confirmation"
+            required
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="first_name">First Name: </label>
+          <input
+            type="text"
+            id="first_name"
+            name="first_name"
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="last_name">Last Name: </label>
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="date_of_birth">Birthday: </label>
+          <input
+            type="date"
+            id="date_of_birth"
+            name="date_of_birth"
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="address">Address: </label>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="contact">Contact Number: </label>
+          <input
+            type="text"
+            id="contact"
+            name="contact"
+            required
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <button type="submit">Save</button>
+          <button type="button">Cancel</button>
+        </div>
+      </form>
+    </div>
+  );
+}
