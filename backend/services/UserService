@@ -1,0 +1,121 @@
+import bcrypt from "bcrypt";
+import User from "../models/User.js";
+
+const userService = {
+  getUserDetails: async (userId) => {
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      //destructuring assignment to exclude password from user object
+      //json object
+      //{ name: "dsad", email: "dsadas"}
+      // var { firstName, emailAddress } = json;  //error
+      // var { name, email } = json;  //error
+      // var name = json.name;
+      // var email = json.email;
+
+      //spread operator
+      // flat out the json object
+      //{ name: "dsad", email: "dsadas"}
+      //var newJson = {
+      //  name: json.name,
+      //  email: json.email,
+      //  contact: "43243243",
+      //}
+      // var newJson = { ...json, contact: "43243243", age: 30 }
+
+      //exclude password from user object
+
+      const { password, ...userWithoutPassword } = user.toObject();
+      //var password = user.password;
+      //var email = user.email;
+      //var contact = user.contact;
+      //var userWithoutPassword = user.toObject(); //the rest of the object
+      return userWithoutPassword;
+    } catch (error) {
+      throw new Error(`Error fetching user details: ${error.message}`);
+    }
+  },
+
+  createUser: async (userData) => {
+    try {
+      const existingUser = await User.findOne({ email: userData.email });
+      if (existingUser) {
+        throw new Error("User with this email already exists");
+      }
+      const newUser = new User(userData);
+      //method to hash password before saving to database
+      await newUser.save();
+      const { password, ...userWithoutPassword } = newUser.toObject();
+      return userWithoutPassword;
+    } catch (error) {
+      throw new Error(`Error creating user: ${error.message}`);
+    }
+  },
+
+  updateUser: async (userId, updateData) => {
+    try {
+      if (updateData.password) {
+        throw new Error(
+          "Password updates are not allowed through this endpoint",
+        );
+      }
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      Object.assign(user, updateData); //object mapping
+      // user.name = updateData.name
+      // user.email = updateData.email
+      // user.contact = updateData.contact
+      // user.first_name = "" | null
+      // updateData.city = "Delhi"
+      //mapping
+      await user.save();
+      const { password, ...userWithoutPassword } = user.toObject();
+      return userWithoutPassword;
+    } catch (error) {
+      throw new Error(`Error updating user: ${error.message}`);
+    }
+  },
+
+  deleteUser: async (userId) => {
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      user.is_active = false;
+      await user.save();
+      return true;
+    } catch (error) {
+      throw new Error(`Error deleting user: ${error.message}`);
+    }
+  },
+
+  changePassword: async (userId, currentPassword, newPassword) => {
+    try {
+      //current password - password123
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const isMatch = await user.comparePassword(currentPassword);
+      if (!isMatch) {
+        throw new Error("Current password is incorrect");
+      }
+      //newPassword - clear text
+      user.password = newPassword;
+      //password = clear text
+      //hashing
+      await user.save();
+      return true;
+    } catch (error) {
+      throw new Error(`Error changing password: ${error.message}`);
+    }
+  },
+};
+
+export default userService;
